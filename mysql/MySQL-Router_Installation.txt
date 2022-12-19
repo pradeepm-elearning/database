@@ -1,0 +1,65 @@
+#sudo vi /etc/hosts
+10.11.95.15     TSPL-CRMN1
+10.11.95.19     TSPL-CRMN2
+10.11.95.6      TSPL-CRMN3PRD
+
+#ll ~/mysql_packages
+total 91040
+-rw-r--r-- 1 pradeep pradeep 52369720 Mar 27 15:16 mysql-commercial-client-8.0.21-1.1.el7.x86_64.rpm
+-rw-r--r-- 1 pradeep pradeep   643296 Mar 27 15:16 mysql-commercial-common-8.0.21-1.1.el7.x86_64.rpm
+-rw-r--r-- 1 pradeep pradeep  4777060 Mar 27 15:16 mysql-commercial-libs-8.0.21-1.1.el7.x86_64.rpm
+-rw-rw-r-- 1 pradeep pradeep 35422420 Mar 27 15:16 mysql-router-community-8.0.23-1.el7.x86_64.rpm
+
+#sudo rpm -qa | grep maria
+mariadb-libs-5.5.68-1.el7.x86_64
+
+#sudo yum remove mariadb-libs-5.5.68-1.el7.x86_64
+
+#sudo rpm -ivh mysql-router-community-8.0.23-1.el7.x86_64.rpm
+
+#sudo rpm -ivh mysql-commercial-common-8.0.21-1.1.el7.x86_64.rpm
+
+#sudo rpm -ivh mysql-commercial-libs-8.0.21-1.1.el7.x86_64.rpm
+
+#sudo rpm -ivh mysql-commercial-client-8.0.21-1.1.el7.x86_64.rpm
+
+#cd ..
+
+#sudo mysqlrouter --bootstrap icadmin@10.11.95.19:3306 --directory myrouter --user=root
+Please enter MySQL password for icadmin:
+ -------------------------------------------------------------------------------------------
+|	# Bootstrapping MySQL Router instance at '/home/pradeep/mysql-packages/myrouter'...
+|
+|	- Creating account(s) (only those that are needed, if any)
+|	- Verifying account (using it to run SQL queries that would be run by Router)
+|	- Storing account in keyring
+|	- Adjusting permissions of generated files
+|	- Creating configuration /home/pradeep/mysql-packages/myrouter/mysqlrouter.conf
+|
+|	# MySQL Router configured for the InnoDB Cluster 'crmcluster'
+|
+|	After this MySQL Router has been started with the generated configuration
+|
+|	    $ mysqlrouter -c /home/pradeep/mysql-packages/myrouter/mysqlrouter.conf
+|
+|	the cluster 'crmcluster' can be reached by connecting to:
+|
+|	## MySQL Classic protocol
+|
+|	- Read/Write Connections: localhost:6446
+|	- Read/Only Connections:  localhost:6447
+|
+|	## MySQL X protocol
+|
+|	- Read/Write Connections: localhost:64460
+|	- Read/Only Connections:  localhost:64470
+ -----------------------------------------------------------------------------------------------
+
+#mysql -utmproot -p -h10.11.95.4 -P6446
+
+-------------------------------------------------------------------------
+BEFORE CONNECTING MAKE SURE THE PERMISSION IS GIVEN TO THE DATABASE USER
+-------------------------------------------------------------------------
+CREATE USER 'tmproot'@'10.11.95.5' IDENTIFIED BY 'Crm_Admin2021';
+grant all privileges on *.* to 'tmproot'@'10.11.95.5';
+FLUSH PRIVILEGES;

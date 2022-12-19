@@ -1,0 +1,168 @@
+ -------
+| MYSQL |
+ -------
+
+delete from TAR_GATEWAY_DEFINITIONS where gat_id=5;
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++
++ Granting Permission for Profiling in Target  +
++ Connecting to Remote MYSQL DB				   +
+++++++++++++++++++++++++++++++++++++++++++++++++
+
+++++++++++++++++++++++++++++++++++++++
++ 			PERMISSIONS				 +
+++++++++++++++++++++++++++++++++++++++
+
+--------------------------------------
++ To view the Permission of the User +
+--------------------------------------
+select user,host from mysql.user;
+[[[[[[[[[[OR]]]]]]]]]]
+SELECT * FROM MYSQL.USER
+
+
+--------------------------------------------------
++ 				Granting Permission	 			 +
+--------------------------------------------------
+CREATE USER 'root'@'lp07' IDENTIFIED BY 'root123';
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'lp07' WITH GRANT OPTION;
+COMMIT;
+
+				++++++
+				+ OR +
+				++++++
+
+CREATE USER 'root'@'192.168.1.103' IDENTIFIED BY '';
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'192.168.1.103' WITH GRANT OPTION;
+
+CREATE USER 'root@192.168.1.43'@'192.168.1.43' IDENTIFIED BY 'root123';
+GRANT ALL PRIVILEGES ON *.* TO 'root@192.168.1.43'@'192.168.1.43' WITH GRANT OPTION;
+
+COMMIT;
+
+
+--------------------------------------------------
++	Updating Password after Granting Permission  +
+--------------------------------------------------
+UPDATE MYSQL.USER SET password = password('cc123') where user = 'root@sys12' and host = 'sys12'
+UPDATE MYSQL.USER SET password = password('cc123') where user = 'root@sys12' and host = ''
+
+
+--------------------------------------------------
++	Deleting the Users from Permission Table	 +
+--------------------------------------------------
+delete from mysql.user where host = 'SYS3'
+
+
+--------------------------------------------------
++	Updating the Users from Permission Table	 +
+--------------------------------------------------
+update mysql.user set host = 'sys3' where host = 'SYS3'
+
+FLUSH PRIVILEGES;
+
+SET SQL_SAFE_UPDATES=0;
+
+
+In /etc/mysql/my.cnf,
+change the bind address = 127.0.0.1 to bind address = 0.0.0.0
+
+Locate "[mysqld]" & Add the Line below:
+lower_case_table_names = 1
+
+
+----------------------------------------------
+Checking Total Number of Processes
+----------------------------------------------
+show status where `variable_name` = 'Threads_connected';
+show processlist;
+
+
+------------------------------------------------------------------------------------------------
+     R E A D - O N L Y   A C C E S S   T O   U S E R   F O R   S P E C I F I C   T A B L E S
+------------------------------------------------------------------------------------------------
+REFERENCE : https://www.digitalocean.com/community/tutorials/how-to-create-a-new-user-and-grant-permissions-in-mysql
+
+SYNTAX:
+CREATE USER '<<USERNAME>>'@'<<IP_ADDR/HOSTNAME>>' IDENTIFIED BY '<<PASSWORD>>';
+GRANT <<TYPE_OF_PERMISSION>> ON <<DATABASE_NAME>>.<<TABLE_NAME>> TO '<<USERNAME>>'@'<<IP_ADDR/HOSTNAME>>';
+
+EXAMPLE:
+CREATE USER 'ccusr2'@'localhost' IDENTIFIED BY 'Cc#1238l2';
+GRANT SELECT ON cce_v2_demo.bas_properties_detail TO 'ccusr2'@'localhost';
+
+CREATE USER 'ccusr2'@'192.168.1.107' IDENTIFIED BY 'Cc#1238l2';
+GRANT SELECT ON cce_v2_demo.bas_properties_detail TO 'ccusr2'@'192.168.1.107';
+
+---------------------------------------------------------------------------------------------------
+TO KNOW THE TABLE NAME & NUMBER OR ROWS
+------------------------------------------
+SELECt table_name, table_rows
+   FROM INFORMATION_SCHEMA.TABLES
+   WHERE TABLE_SCHEMA in('tactics','ccev2_syssbprod')
+   ORDER BY TABLE_NAME ASC;
+   
+TO KNOW THE SIZE OF EACH TABLE IN SCHEMA
+----------------------------------------
+SELECT
+  TABLE_NAME AS `Table`,
+  ROUND((DATA_LENGTH + INDEX_LENGTH) / 1024*1024) AS SizeInMB
+FROM
+  information_schema.TABLES
+WHERE
+  TABLE_SCHEMA in ('tactics','ccev2_syssbprod')
+ORDER BY
+  TABLE_NAME ASC;
+  
+--------------------------------------------
+
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|		TO CHECK THE NUMBER OF CONNECTION FOR A SPECIFIC USER			|
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+SELECT * from information_schema.processlist where user = 'sb_api';
+SELECT * from information_schema.processlist where user ='ccev2_syssbprod' and COMMAND='Sleep' and HOST like '%10.11.95.4%';
+
+SELECT SUBSTRING_INDEX(host, ':', 1) AS host_short, user AS users, COUNT(*) AS count1 FROM information_schema.processlist where user ='ccev2_syssbprod' GROUP BY host_short,user ORDER BY COUNT(*), host_short;
+SELECT SUBSTRING_INDEX(host, ':', 1) AS host_short, user AS users, COUNT(*) AS count1 FROM information_schema.processlist where user ='sb_api' GROUP BY host_short,user ORDER BY COUNT(*), host_short;
+SELECT SUBSTRING_INDEX(host, ':', 1) AS host_short, user AS users, COUNT(*) AS count1 FROM information_schema.processlist GROUP BY host_short,user ORDER BY COUNT(*), host_short;
+
+Select concat('KILL ',ID,';') from information_schema.processlist where user ='ccev2_syssbprod' and COMMAND='Sleep' and HOST like '%10.11.95.4%';
+
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|		CCLOYAL ACCUMULATION | UPDATE NOTIFICATION_QUEUE | FLAG = Y		|
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+select * from ccev2_syssbprod.notification_queue where create_tmstp >='2021-12-25 00:00:00' and is_notification_sent = 'N' order by create_tmstp desc;
+
+select notification_code, count(1) from ccev2_syssbprod.notification_queue where create_tmstp >='2021-12-25 00:00:00' and is_notification_sent = 'N' group by notification_code;
+
+UPDATE ccev2_syssbprod.notification_queue t1
+INNER JOIN
+(select notification_no from ccev2_syssbprod.notification_queue where create_tmstp >='2021-12-25 00:00:00' and is_notification_sent = 'N' and notification_code = 'NEW_CUSTOMER')t2
+on t1.notification_no=t2.notification_no 
+set is_notification_sent = 'Y';
+commit;
+
+UPDATE ccev2_syssbprod.notification_queue t1
+INNER JOIN
+(select notification_no from ccev2_syssbprod.notification_queue where create_tmstp >='2021-12-25 00:00:00' and is_notification_sent = 'N' and notification_code = 'DIGITAL_CARD')t2
+on t1.notification_no=t2.notification_no 
+set is_notification_sent = 'Y' ;
+commit;
+
+select SCHEDULERNAME,WORKFLOWID,NEXTRUNDATE,STATUS from ccev2_syssbprod.scheduler_workflow  where workflowid in (155,43) and STATUS in ('SCHEDULED','RUNNING') and comments='Loyal' order by WORKFLOWID asc;
+
+
+
+REFERENCE : https://www.digitalocean.com/community/tutorials/how-to-create-a-new-user-and-grant-permissions-in-mysql
+
+SYNTAX:
+CREATE USER '<<USERNAME>>'@'<<IP_ADDR/HOSTNAME>>' IDENTIFIED BY '<<PASSWORD>>';
+GRANT <<TYPE_OF_PERMISSION>> ON <<DATABASE_NAME>>.<<TABLE_NAME>> TO '<<USERNAME>>'@'<<IP_ADDR/HOSTNAME>>';
+
+EXAMPLE:
+CREATE USER 'ccusr2'@'localhost' IDENTIFIED BY 'Cc#1238l2';
+GRANT SELECT ON cce_v2_demo.bas_properties_detail TO 'ccusr2'@'localhost';
+
+CREATE USER 'ccusr2'@'192.168.1.107' IDENTIFIED BY 'Cc#1238l2';
+GRANT SELECT ON cce_v2_demo.bas_properties_detail TO 'ccusr2'@'192.168.1.107';

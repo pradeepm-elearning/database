@@ -1,0 +1,159 @@
+-----------------------------------------------
+INSTALLATION OF MYSQL - 8 : BINARY INSTALLATION
+-----------------------------------------------
+
+yum search libaio
+yum install libaio
+yum install ncurses-compat-libs
+
+groupadd mysql
+useradd -r -g mysql -s /bin/false mysql
+
+mkdir -pv /app/ccengage/opt/mysql-server/
+cd /app/ccengage/opt/mysql-server/
+
+tar -xvf mysql-VERSION-OS.tar.xz
+ln -s /app/ccengage/opt/mysql-server/mysql-VERSION-OS mysql
+
+cd mysql
+mkdir data etc logs mysqltmp binlog
+chown -R mysql:mysql /app/ccengage/opt/mysql-server
+chmod 750 /app/ccengage/opt/mysql-server/mysql/data
+
+cd /app/ccengage/opt/mysql-server/mysql/etc/
+vim my.cnf
+#-----------------------------------------------------------------------------
+[client]
+port = 3306
+socket = /app/ccengage/opt/mysql-server/mysql/mysql.sock
+
+[mysqld]
+user = mysql
+server-id = 1
+basedir = /app/ccengage/opt/mysql-server/mysql
+datadir = /app/ccengage/opt/mysql-server/mysql/data
+socket = /app/ccengage/opt/mysql-server/mysql/mysql.sock
+pid-file = /app/ccengage/opt/mysql-server/mysql/mysqld.pid
+log-error = /app/ccengage/opt/mysql-server/mysql/logs/mysql_error.log
+tmpdir = /app/ccengage/opt/mysql-server/mysql/mysqltmp
+port = 3306
+
+# Disabling symbolic-links is recommended to prevent assorted security risks
+symbolic-links=0
+
+# Settings user and group are ignored when systemd is used.
+# If you need to run mysqld under a different user or group,
+# customize your systemd unit file for mariadb according to the
+# instructions in http://fedoraproject.org/wiki/Systemd
+
+max_connections = 10000
+max_connect_errors = 2000
+lower_case_table_names = 1
+
+default_password_lifetime=365
+connect_timeout=7200
+
+key_buffer_size = 50M
+max_allowed_packet = 1G
+table_definition_cache = 2000
+sort_buffer_size = 6M
+read_buffer_size = 6M
+read_rnd_buffer_size = 6M
+tmp_table_size = 2048M
+join_buffer_size = 6M
+thread_cache_size = 128
+max_heap_table_size = 512M
+
+binlog_format = ROW
+binlog_checksum = NONE
+expire_logs_days = 4
+log_bin_trust_function_creators = 1
+
+#DINSTALL_SECURE_FILE_PRIVDIR=/tmp/CCFiles
+local_infile = 1
+#secure-file-priv=/mysqlbackup/ccfiles
+
+#innodb settings#
+innodb_buffer_pool_size = 8G
+innodb_buffer_pool_chunk_size = 1073741824
+innodb_buffer_pool_instances = 4
+innodb_log_buffer_size = 100M
+innodb_adaptive_flushing
+innodb_flush_log_at_trx_commit = 1
+innodb_adaptive_hash_index = ON
+lock_wait_timeout = 31536000
+innodb_lock_wait_timeout = 50
+innodb_flush_method = O_DIRECT
+innodb_log_files_in_group = 2
+innodb_log_file_size = 264M
+innodb_log_buffer_size = 264M
+innodb_thread_concurrency = 0
+interactive_timeout = 1800
+wait_timeout = 31536000
+innodb_file_per_table
+mysqlx = OFF
+
+log-bin = /app/ccengage/opt/mysql-server/mysql/binlog/binlog.index
+binlog-format = MIXED
+binlog_cache_size = 32768
+binlog_stmt_cache_size = 32768
+max_binlog_size = 102400000
+log_timestamps = SYSTEM
+
+#------------------------------------
+# END OF PARAMETERS FOR API SLOWNESS
+#------------------------------------
+
+#[mysqld_safe]
+#
+# include all files from the config directory
+#
+!includedir /etc/my.cnf.d
+#-----------------------------------------------------------------------------
+
+Initializing the MySQL
+----------------------------
+mysqld --defaults-file=/app/ccengage/opt/mysql-server/mysql/etc/my.cnf  --initialize --user=mysql
+
+
+Starting MySQL Services
+----------------------------
+mysqld --defaults-file=/app/ccengage/opt/mysql-server/mysql/etc/my.cnf --user=root &
+
+
+Changing the MySQL root user Password :: Locate Password in the Log file "/app/ccengage/opt/mysql-server/mysql/logs/mysql_error.log"
+--------------------------------------------------------------------------------------------------------------------
+mysql_secure_installation --defaults-file=/app/ccengage/opt/mysql-server/mysql/etc/my.cnf
+
+
+Shutting down the MySQL Services
+----------------------------
+mysqladmin --defaults-file=/app/ccengage/opt/mysql-server/mysql/etc/my.cnf -u root -p shutdown
+
+
+OPTIONAL (NOT REQUIRED)
+----------------------------
+mysql_ssl_rsa_setup
+
+
+Start / Stop Service Files
+----------------------------
+cp -rv support-files/mysql.server /etc/init.d/mysql.server
+mv -v /etc/my.cnf /etc/my.cnf-orig
+ln -s /app/ccengage/opt/mysql-server/mysql/etc/my.cnf /etc/my.cnf
+service mysql.server start/stop/status
+
+
+------------------------------------------------------
+IMPORTANT ONE
+------------------------------------------------------
+ln -s /app/ccengage/opt/mysql-server/mysql/mysql.sock /tmp/mysql.sock
+export PATH=$PATH:/app/ccengage/opt/mysql-server/mysql/bin
+------------------------------------------------------
+
+CREATE USER 'username'@'ip_address' IDENTIFIED BY 'password';
+GRANT ALL PRIVILEGES on *.* TO 'username'@'ip_address' WITH GRANT OPTION;
+FLUSH PRIVILEGES;
+COMMIT;
+
+ALTER USER 'username'@'ip_address' IDENTIFIED BY 'password';
