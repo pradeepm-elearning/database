@@ -1,0 +1,83 @@
+DROP USER PRAD_TEST CASCADE;
+
+CREATE USER PRAD_TEST IDENTIFIED BY PRAD_TEST;
+
+GRANT CREATE ANY VIEW TO PRAD_TEST;
+
+GRANT CREATE ANY TABLE TO PRAD_TEST;
+
+GRANT CREATE ANY TABLE TO PRAD_TEST;
+
+GRANT DROP ANY TABLE TO PRAD_TEST;
+
+GRANT CONNECT,RESOURCE TO PRAD_TEST;
+
+GRANT CREATE ROLE TO PRAD_TEST;
+
+GRANT CREATE VIEW TO PRAD_TEST;
+
+GRANT CREATE SYNONYM TO PRAD_TEST;
+
+GRANT SELECT ON V_$RESERVED_WORDS TO PRAD_TEST;
+
+GRANT CREATE ANY DIRECTORY TO PRAD_TEST;
+
+GRANT EXECUTE ON DBMS_JOB TO PRAD_TEST;
+
+GRANT EXECUTE ON DBMS_PIPE TO PRAD_TEST;
+
+GRANT EXECUTE ON UTL_FILE TO PRAD_TEST;
+
+GRANT EXECUTE ON DBMS_STAT_FUNCS TO PRAD_TEST;
+
+GRANT CREATE MATERIALIZED VIEW TO PRAD_TEST;
+
+GRANT CREATE TYPE TO PRAD_TEST;
+
+GRANT CREATE SYNONYM TO PRAD_TEST;
+
+GRANT UNLIMITED TABLESPACE TO PRAD_TEST;
+
+spool /tmp/oracle_2.0_scripts/Orcl_tab_cons.log;
+@'/tmp/oracle_2.0_scripts/Orcl_tab_cons.sql';
+spool off;
+
+spool /tmp/oracle_2.0_scripts/Orcl_Views.log;
+@'/tmp/oracle_2.0_scripts/Orcl_Views.sql';
+spool off;
+
+spool /tmp/oracle_2.0_scripts/Orcl_Insert_script.log;
+@'/tmp/oracle_2.0_scripts/Orcl_Insert_script.sql';
+spool off;
+
+spool /tmp/oracle_2.0_scripts/Ingest_Scripts_Package.log;
+@'/tmp/oracle_2.0_scripts/Ingest_Scripts_Package.sql';
+spool off;
+
+spool /tmp/oracle_2.0_scripts/interactivesegmentscripts.log;
+@'/tmp/oracle_2.0_scripts/interactivesegmentscripts.sql';
+spool off;
+
+spool /tmp/oracle_2.0_scripts/001.log;
+@'/tmp/oracle_2.0_scripts/001.sql';
+spool off;
+
+spool /tmp/oracle_2.0_scripts/002.log;
+@'/tmp/oracle_2.0_scripts/002.sql';
+spool off;
+
+spool /tmp/oracle_2.0_scripts/003.log;
+@'/tmp/oracle_2.0_scripts/003.sql';
+spool off;
+
+spool /tmp/oracle_2.0_scripts/004.log;
+@'/tmp/oracle_2.0_scripts/004.sql';
+spool off;
+
+spool /tmp/oracle_2.0_scripts/005.log;
+@'/tmp/oracle_2.0_scripts/005.sql';
+spool off;
+
+spool /tmp/oracle_2.0_scripts/006.log;
+@'/tmp/oracle_2.0_scripts/006.sql';
+spool off;

@@ -1,0 +1,146 @@
+Oracle Client Installation Document
+------------------------------------
+Create folders to install the Oracle Client:
+#sudo mkdir -p /u01/app/oracle
+#cd /u01/
+
+Copy the Client from SMB Server & extract it in the path /u01/app/ directory
+#smbclient //192.168.1.100/Softwares
+>cd Linux
+>cd Oracle
+>cd Clients
+>get linux.x64_11gR2_client.zip
+
+Create a Groups and User. Here "oinstall" and "dba" are groups
+Create a User
+sudo adduser oracle
+sudo passwd oracle
+
+Create a Group
+sudo groupadd oinstall
+sudo groupadd dba
+
+sudo usermod -G dba,oinstall oracle
+sudo chown -R oracle:oinstall /u01/app
+sudo chmod -R 775 /u01/
+
+
+Add in sysctl.conf file
+sudo vi /etc/sysctl.conf file
+fs.suid_dumpable = 1
+fs.aio-max-nr = 1048576
+fs.file-max = 6815744
+kernel.shmall = 2097152
+kernel.shmmax = 536870912
+kernel.shmmni = 4096
+# semaphores: semmsl, semmns, semopm, semmni
+kernel.sem = 250 32000 100 128
+net.ipv4.ip_local_port_range = 9000 65500
+net.core.rmem_default=4194304
+net.core.rmem_max=4194304
+net.core.wmem_default=262144
+net.core.wmem_max=1048584
+save & quit
+
+Run sudo /sbin/sysctl -a
+Run sudo /sbin/sysctl -p
+
+
+Add in /etc/profile
+sudo vim /etc/profile
+TMP=/tmp; export TMP
+TMPDIR=$TMP; export=TMPDIR
+
+ORACLE_BASE=/u01/app/oracle; export ORACLE_BASE
+ORACLE_HOME=$ORACLE_BASE/product/11.2.0/client_1; export ORACLE_HOME
+PATH=/usr/sbin:$PATH; export PATH
+PATH=$ORACLE_HOME/bin:$PATH; export PATH
+
+ORACLE_JDBC_DRIVER_PATH=$ORACLE_BASE/product/11.2.0/client_1/jdbc/lib
+LD_LIBRARY_PATH=$ORACLE_HOME/lib:/lib:/usr/lib; export LD_LIBRARY_PATH
+CLASSPATH=$ORACLE_HOME/jlib:ORACLE_HOME/rdbms/jlib; export CLASSPATH
+save the file
+
+Create a New Fake Oracle installer
+sudo mkdir /usr/lib64
+sudo ln -s /etc /etc/rc.d
+sudo ln -s /lib/x86_64-linux-gnu/libgcc_s.so.1 /lib64/
+sudo ln -s /usr/bin/awk /bin/awk
+sudo ln -s /usr/bin/basename /bin/basename
+sudo ln -s /usr/bin/rpm /bin/rpm
+sudo ln -s /usr/lib/x86_64-linux-gnu/libc_nonshared.a /usr/lib64/
+sudo ln -s /usr/lib/x86_64-linux-gnu/libpthread_nonshared.a /usr/lib64/
+sudo ln -s /usr/lib/x86_64-linux-gnu/libstdc++.so.6 /lib64/
+sudo ln -s /usr/lib/x86_64-linux-gnu/libstdc++.so.6 /usr/lib64/
+
+Add in / limits.conf File
+sudo vi /etc/security/limits.conf
+#### oracle User Settings 4 Oracle 11g ####
+oracle soft nproc 2047
+oracle hard nproc 16384
+oracle soft nofile 1024
+oracle hard nofile 65536
+oracle soft stack 10240
+# End of file save the file
+
+Install Prerequisite Packages
+sudo apt-get update
+sudo apt-get install alien
+sudo apt-get install autoconf
+sudo apt-get install automake
+sudo apt-get install autotools-dev
+sudo apt-get install binutils
+sudo apt-get install bzip2
+sudo apt-get install doxygen*
+sudo apt-get install elfutils
+sudo apt-get install expat
+sudo apt-get install gawk
+sudo apt-get install gcc
+sudo apt-get install gcc-multilib
+sudo apt-get install g++-multilib
+sudo apt-get install ia32-libs	- NA
+sudo apt-get install ksh
+sudo apt-get install less
+sudo apt-get install lesstif2	- NA
+sudo apt-get install lesstif2-dev - NA
+sudo apt-get install lib32z1
+sudo apt-get install libaio1
+sudo apt-get install libaio-dev
+sudo apt-get install libc6-dev
+sudo apt-get install libc6-dev-i386
+sudo apt-get install libc6-i386
+sudo apt-get install libelf-dev
+sudo apt-get install libltdl-dev
+sudo apt-get install libmotif4
+sudo apt-get install libodbcinstq4-1 libodbcinstq4-1:i386
+sudo apt-get install libpth-dev
+sudo apt-get install libpthread-stubs0 - NA
+sudo apt-get install libpthread-stubs0-dev
+sudo apt-get install libstdc++5
+sudo apt-get install lsb-cxx - NA
+sudo apt-get install make
+sudo apt-get install openssh-server
+sudo apt-get install pdksh
+sudo apt-get install rlwrap
+sudo apt-get install rpm
+sudo apt-get install sysstat
+sudo apt-get install unixodbc
+sudo apt-get install unixodbc-dev
+sudo apt-get install unzip
+sudo apt-get install x11-utils
+sudo apt-get install zlibc
+
+Copy the Client
+sudo cp -r client /u01/app/oracle/
+
+Permissions Provide for Oracle user oinstall group Directory
+sudo chown -R oracle:oinstall /u01
+
+Other Permissions ,database not open use this Commands
+sudo chmod -R 775 /u01/
+
+Oracle Install for Oracle user Commands
+cd /u01/app/oracle/client/
+
+
+/u01/app/oracle/product/11.2.0/client_1

@@ -1,0 +1,161 @@
+#subscription-manager register
+	register with the Company Mail ID.
+
+
+#vim /etc/hosts
+IP	HOSTNAME
+
+
+#vim /etc/sysctl.conf ----> to configure the Kernel Parameter ---> in RHEL 6 - 7
+#vim /usr/lib/sysctl.d/00-system.conf
+
+<<EOL>>
+fs.file-max = 6815744
+kernel.sem = 250 32000 100 128
+kernel.shmmni = 4096
+kernel.shmall = 1073741824
+kernel.shmmax = 4398046511104
+net.core.rmem_default = 262144
+net.core.rmem_max = 4194304
+net.core.wmem_default = 262144
+net.core.wmem_max = 1048576
+fs.aio-max-nr = 1048576
+net.ipv4.ip_local_port_range = 9000 65500
+save & quit
+
+
+#/sbin/sysctl -a ----> to check the setting
+#/sbin/sysctl -p ----> to make this setting live in the Kernel.
+
+#vim /etc/security/limits.conf
+oracle   soft   nofile    1024
+oracle   hard   nofile    65536
+oracle   soft   nproc    16384
+oracle   hard   nproc    16384
+oracle   soft   stack    10240
+oracle   hard   stack    32768
+
+save & quit
+
+#vim /etc/selinux/config
+	SELINUX=permissive
+save & quit
+
+#vim /etc/security/limits.d/90-nproc.conf
+# Change this
+*          soft    nproc    1024
+
+# To this
+*	-	nproc	16384
+------------------------------------
+
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+yum install binutils-*x86_64
+yum install binutils -y
+yum install compat-libcap1 -y
+yum install compat-libstdc++-33 -y   NA
+yum install compat-libstdc++-33.i686 -y NA
+yum install gcc -y
+yum install gcc-c++ -y
+yum install gcc*
+yum install glibc -y
+yum install glibc.i686 -y
+yum install glibc-devel -y
+yum install glibc-devel.i686 -y
+yum install ksh -y
+yum install libgcc -y
+yum install libgcc.i686 -y
+yum install libstdc++ -y
+yum install libstdc++.i686 -y
+yum install libstdc++-devel -y
+yum install libstdc++-devel.i686 -y
+yum install libaio -y
+yum install libaio.i686 -y
+yum install libaio-devel -y
+yum install libaio-devel.i686 -y
+yum install libXext -y
+yum install libXext.i686 -y
+yum install libXtst -y
+yum install libXtst.i686 -y
+yum install libX11 -y
+yum install libX11.i686 -y
+yum install libXau -y
+yum install libXau.i686 -y
+yum install libxcb -y
+yum install libxcb.i686 -y
+yum install libXi -y
+yum install libXi.i686 -y
+yum install make -y
+yum install numactl*
+yum install sysstat -y
+yum install unixODBC -y
+yum install unixODBC-devel -y
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+groupadd -g 506 asmdba
+groupadd -g 505 asmoper
+groupadd -g 501 oinstall
+groupadd -g 502 dba
+groupadd -g 503 oper
+groupadd -g 504 asmadmin
+useradd -u 502 -g oinstall -G dba,asmdba,oper oracle
+passwd oracle
+mkdir -pv /u01/app/oracle/product/12.1.0.2/client_1
+
+chown -R oracle:oinstall /u01
+chmod 775 /u01
+xhost +server.example.com
+unzip the files
+chown -R oracle:oinstall <<Extracted Folder>>
+
+#su - oracle
+#vim .bash_profile
+
+
+TMP=/tmp; export TMP
+TMPDIR=$TMP; export=TMPDIR
+
+ORACLE_BASE=/u01/app/oracle; export ORACLE_BASE
+ORACLE_HOME=$ORACLE_BASE/product/12.1.0.2/client_1; export ORACLE_HOME
+ORACLE_TERM=xterm; export ORACLE_TERM
+PATH=/usr/sbin:$PATH; export PATH
+PATH=$ORACLE_HOME/bin:$PATH; export PATH
+ORACLE_JDBC_DRIVER_PATH=$ORACLE_BASE/product/12.1.0.2/client_1/jdbc/lib
+
+LD_LIBRARY_PATH=$ORACLE_HOME/lib:/lib:/usr/lib; export LD_LIBRARY_PATH
+CLASSPATH=$ORACLE_HOME/jlib:ORACLE_HOME/rdbms/jlib; export CLASSPATH
+save & quit
+
+#init 6
+
+Create a File of your choice. Here I am creating a file name "ora_client.rsp" in any path which has permission for user oracle to execute. Add the below content changing the required field.
+vim ora_client.rsp
+-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-
+oracle.install.responseFileVersion=/oracle/install/rspfmt_clientinstall_response_schema_v12.1.0
+ORACLE_HOSTNAME=IMC-PROD-Template
+UNIX_GROUP_NAME=oinstall
+INVENTORY_LOCATION=/u01/app/oraInventory/
+SELECTED_LANGUAGES=en
+ORACLE_HOME=/u01/app/oracle/product/12.1.0.2/client_1/
+ORACLE_BASE=/u01/app/oracle/
+oracle.install.client.installType=Administrator
+oracle.install.client.customComponents="oracle.sqlj:12.1.0.2.0","oracle.rdbms.util:12.1.0.2.0","oracle.javavm.client:12.1.0.2.0","oracle.sqlplus:12.1.0.2.0","oracle.dbjava.jdbc:12.1.0.2.0","oracle.ldap.client:12.1.0.2.0","oracle.rdbms.oci:12.1.0.2.0","oracle.precomp:12.1.0.2.0","oracle.xdk:12.1.0.2.0","oracle.network.aso:12.1.0.2.0","oracle.oraolap.mgmt:12.1.0.2.0","oracle.network.client:12.1.0.2.0","oracle.network.cman:12.1.0.2.0","oracle.network.listener:12.1.0.2.0","oracle.ordim.client:12.1.0.2.0","oracle.odbc:12.1.0.2.0","oracle.has.client:12.1.0.2.0","oracle.dbdev:12.1.0.2.0","oracle.rdbms.scheduler:12.1.0.2.0"
+oracle.install.client.schedulerAgentHostName=
+oracle.install.client.schedulerAgentPortNumber=
+-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-
+
+#./runInstaller -silent -force -responseFile /<<PATH_OF_THE_FILE>>/ora_client.rsp -ignorePrereq -ignoreSysPreReqs -ignoreDiskWarning
+
+once the installation is complete run the script as root user
+
+/u01/app/orainventory/orainstRoot.sh
+/u01/app/oracle/product/11.2.0/dbhome_2/root.sh
+
+
+
+type:
+#sqlplus /nolog
+SQL> connect sys/<<password>>@<<hostname>>:<<port number>>/<<service name>> as sysdba
+SQL> connect sys/cc$server123@192.168.1.150:1521/CCDB as sysdba
+
+SQL> connect sys/LP18ORA@192.168.1.118:1521/LP18ORA

@@ -1,0 +1,35 @@
+T.B.A
+itm for itnp ip linux . tar
+
+
+SCHEMA	SVC_JPPL
+PASSWORD	SVC_JPPL
+SID	CCJORA
+PORT	1521
+IP	45.114.141.71
+
+
+/u01/oracle_db/app_x64/oracle/
+/u01/oracle_db/app_x64/oracle/product/12.1.0/dbhome_1/
+/u01/oracle_client/app_x64/oracle/product/12.1.0/client_1/
+
+
+
+
+/oracle_db/
+/oracle_client/
+
+
+smtp.office365.com
+
+
+
+./runInstaller -silent -responseFile /u01/Oracle_12c/database/response/db_install.rsp -ignoreDiskWarning
+
+netca -silent -responseFile /u01/Oracle_12c/database/response/netca.rsp
+
+dbca -silent -responseFile /u01/Oracle_12c/database/response/dbca.rsp
+
+
+
+./runInstaller -silent -force -responseFile /u01/client32/response/client_install.rsp -ignorePrereq -ignoreSysPreReqs -ignoreDiskWarning

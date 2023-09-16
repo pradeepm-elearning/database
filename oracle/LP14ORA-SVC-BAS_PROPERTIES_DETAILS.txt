@@ -1,0 +1,68 @@
+SET DEFINE OFF;
+Insert into BAS_PROPERTIES_DETAIL
+   (PROP_CODE, PROP_NAME, PROP_KEY, PROP_VALUE, PROP_CREATE_DATE, 
+    PROP_CREATE_USER, PROP_UPDATE_DATE, PROP_UPDATE_USER)
+ Values
+   ('DriverClass', 'driverClass', 'driverClass', 'oracle.jdbc.driver.OracleDriver', TO_DATE('08/08/2017 00:00:00', 'MM/DD/YYYY HH24:MI:SS'), 
+    'admin', NULL, NULL);
+Insert into BAS_PROPERTIES_DETAIL
+   (PROP_CODE, PROP_NAME, PROP_KEY, PROP_VALUE, PROP_CREATE_DATE, 
+    PROP_CREATE_USER, PROP_UPDATE_DATE, PROP_UPDATE_USER)
+ Values
+   ('DriverURL', 'driverURL', 'driverURL', 'jdbcracle:thin:localhost:1521:LP14ORA', TO_DATE('08/08/2017 00:00:00', 'MM/DD/YYYY HH24:MI:SS'), 
+    'admin', NULL, NULL);
+Insert into BAS_PROPERTIES_DETAIL
+   (PROP_CODE, PROP_NAME, PROP_KEY, PROP_VALUE, PROP_CREATE_DATE, 
+    PROP_CREATE_USER, PROP_UPDATE_DATE, PROP_UPDATE_USER)
+ Values
+   ('UserName', 'userName', 'userName', 'svc2_payback', TO_DATE('08/08/2017 00:00:00', 'MM/DD/YYYY HH24:MI:SS'), 
+    'admin', NULL, NULL);
+Insert into BAS_PROPERTIES_DETAIL
+   (PROP_CODE, PROP_NAME, PROP_KEY, PROP_VALUE, PROP_CREATE_DATE, 
+    PROP_CREATE_USER, PROP_UPDATE_DATE, PROP_UPDATE_USER)
+ Values
+   ('Password', 'password', 'password', 'svc2_payback', TO_DATE('08/08/2017 00:00:00', 'MM/DD/YYYY HH24:MI:SS'), 
+    'admin', NULL, NULL);
+Insert into BAS_PROPERTIES_DETAIL
+   (PROP_CODE, PROP_NAME, PROP_KEY, PROP_VALUE, PROP_CREATE_DATE, 
+    PROP_CREATE_USER, PROP_UPDATE_DATE, PROP_UPDATE_USER)
+ Values
+   ('TEMPFILELOCATION', 'tempFileLocation', 'tempFileLocation', 'D:/SVC/dirs/Data/', TO_DATE('07/31/2015 00:00:00', 'MM/DD/YYYY HH24:MI:SS'), 
+    'admin', NULL, NULL);
+Insert into BAS_PROPERTIES_DETAIL
+   (PROP_CODE, PROP_NAME, PROP_KEY, PROP_VALUE, PROP_CREATE_DATE, 
+    PROP_CREATE_USER, PROP_UPDATE_DATE, PROP_UPDATE_USER)
+ Values
+   ('DATATYPE_ORCL', 'DATATYPE', 'oracle.jdbc.driver.OracleDriver', 'S:varchar2,N:number,Date', TO_DATE('07/25/2017 00:00:00', 'MM/DD/YYYY HH24:MI:SS'), 
+    'admin', NULL, NULL);
+Insert into BAS_PROPERTIES_DETAIL
+   (PROP_CODE, PROP_NAME, PROP_KEY, PROP_VALUE, PROP_CREATE_DATE, 
+    PROP_CREATE_USER, PROP_UPDATE_DATE, PROP_UPDATE_USER)
+ Values
+   ('errorfile', 'errorfile', 'errorfile', 'D:/SVC/dirs/Data/errorfile/', TO_DATE('07/31/2015 00:00:00', 'MM/DD/YYYY HH24:MI:SS'), 
+    'admin', NULL, NULL);
+Insert into BAS_PROPERTIES_DETAIL
+   (PROP_CODE, PROP_NAME, PROP_KEY, PROP_VALUE, PROP_CREATE_DATE, 
+    PROP_CREATE_USER, PROP_UPDATE_DATE, PROP_UPDATE_USER)
+ Values
+   ('errordata', 'errordata', 'errordata', 'D:/SVC/dirs/Data/errordata/', TO_DATE('07/31/2015 00:00:00', 'MM/DD/YYYY HH24:MI:SS'), 
+    'admin', NULL, NULL);
+Insert into BAS_PROPERTIES_DETAIL
+   (PROP_CODE, PROP_NAME, PROP_KEY, PROP_VALUE, PROP_CREATE_DATE, 
+    PROP_CREATE_USER, PROP_UPDATE_DATE, PROP_UPDATE_USER)
+ Values
+   ('processed', 'processed', 'processed', 'D:/SVC/dirs/Data/processed/', TO_DATE('07/31/2015 00:00:00', 'MM/DD/YYYY HH24:MI:SS'), 
+    'admin', NULL, NULL);
+Insert into BAS_PROPERTIES_DETAIL
+   (PROP_CODE, PROP_NAME, PROP_KEY, PROP_VALUE, PROP_CREATE_DATE, 
+    PROP_CREATE_USER, PROP_UPDATE_DATE, PROP_UPDATE_USER)
+ Values
+   ('processing', 'processing', 'processing', 'D:/SVC/dirs/Data/processing/', TO_DATE('07/31/2015 00:00:00', 'MM/DD/YYYY HH24:MI:SS'), 
+    'admin', NULL, NULL);
+Insert into BAS_PROPERTIES_DETAIL
+   (PROP_CODE, PROP_NAME, PROP_KEY, PROP_VALUE, PROP_CREATE_DATE, 
+    PROP_CREATE_USER, PROP_UPDATE_DATE, PROP_UPDATE_USER)
+ Values
+   ('uploadLocation', 'uploadLocation', 'uploadLocation', 'C:/CC_Applications/apache-tomcat-7.0.59/webapps/CCSingleView/upload/', TO_DATE('07/25/2017 00:00:00', 'MM/DD/YYYY HH24:MI:SS'), 
+    'admin', NULL, NULL);
+COMMIT;

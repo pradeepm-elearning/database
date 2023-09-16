@@ -1,0 +1,190 @@
+This is used for the lines to not breakup when executing the command on SQLPlus prompt. For Example to get the below output.
+-----------------------+
+Name   |    Address    |
+-------+---------------+
+name1  |    address1   |
+name2  |    address2   |
+name3  |    address3   |
+
+Add the below 3 command before executing the main Select statement.
+set lines 256
+set trimout on
+set tab off
+
+
+To check Table Size of a Schema in GB in Oracle
+-------------------------------------------------
+SELECT segment_name, segment_type, bytes/1024/1024 MB FROM user_segments WHERE segment_type='TABLE' AND segment_name='<<TABLE_NAME>>'
+
+select owner, sum(bytes)/1024/1024/1024 schema_size_gig from dba_segments group by owner;
+
+select sum(bytes)/1024/1024/1024 as size_in_gig, segment_type from dba_segments where owner='SCOTT' group by segment_type;
+----------
+TOAD:
+----------
+
+select * from dba_users ------> to view the Users/Schema
+
+drop user TARGET_TEST_V2 cascade --------> Deleting User/Schema from the Database
+
+create user TEST_SCHEMA identified by TEST_SCHEMA ---------> Creating User/Schema
+
+create user TEST_SCHEMA identified by TEST_SCHEMA default tablespace TABLESPACE_NAME temporary tablespace temp quota 0 on system quota unlimited on TABLESPACE_NAME; ---------> Creating User/Schema with specific tablespace
+
+
+grant connect, resource, create table, create sequence, create view, create synonym to TEST_SCHEMA ------> Granting Permission for Connnection
+
+----------------------------------------------------------------------------------------------------------------------------
+SELECT 'DROP '||OBJECT_TYPE||' '||OBJECT_NAME|| DECODE(OBJECT_TYPE,'TABLE',' CASCADE CONSTRAINTS')||';' FROM USER_OBJECTS
+
+purge recyclebin
+----------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+-------------------------------------------------------------------------------------------------------------------------------------------
+DB LINK
+-------------------------------------------------------------------------------------------------------------------------------------------
+select * from all_db_links;
+
+GRANT CREATE  DATABASE LINK TO CC_TARGET_ADMIN_R26 ; ----- CONNECT AS sys in Remote System
+
+CREATE  DATABASE LINK CC_TARGET_ADMIN_R26_link1
+CONNECT TO CC_TARGET_ADMIN_R2_SIX  IDENTIFIED BY CC_TARGET_ADMIN_R2_SIX 
+USING '115.119.86.122:1521/CCORCL';
+
+select * from DOMINOS@CC_TARGET_ADMIN_R26_link3
+
+*******************************************************
+
+CREATE DATABASE LINK R2_SIX_TO_R27 CONNECT TO CC_TARGET_ADMIN_R2_SIX IDENTIFIED BY CC_TARGET_ADMIN_R2_SIX USING '192.168.1.250:1521/CCORCL' ;
+
+SELECT * FROM LINEAR_DATA_1@R2_SIX_TO_R27
+
+CREATE TABLE LINEAR_DATA_1 AS (SELECT * FROM LINEAR_DATA_1@R2_SIX_TO_R27);
+
+SELECT * FROM LINEAR_DATA_1;
+
+SELECT * FROM ALL_DB_LINKS;
+
+
+
+
+---------------------------------------------------------------------------------------------------------------------------------
+CHECKING DB CONNECTION:
+---------------------------------------------------------------------------------------------------------------------------------
+
+SELECT SID,SERIAL#,USERNAME,OSUSER,PROCESS,PROGRAM FROM V$SESSION ORDER BY osuser
+
+select user#,serial#,osuser,username,program,schemaname from v$session where osuser = 'Ashish'
+select user#,serial#,osuser,username,program,schemaname from v$session where osuser = 'devika'
+select user#,serial#,osuser,username,program,schemaname from v$session where osuser = 'linnet'
+select user#,serial#,osuser,username,program,schemaname from v$session where osuser = 'manikanta'
+select user#,serial#,osuser,username,program,schemaname from v$session where osuser = 'marimagesh'
+select user#,serial#,osuser,username,program,schemaname from v$session where osuser = 'Maruti'
+select user#,serial#,osuser,username,program,schemaname from v$session where osuser = 'Nikhila Suresh'
+select user#,serial#,osuser,username,program,schemaname from v$session where osuser = 'PradeepM'
+select user#,serial#,osuser,username,program,schemaname from v$session where osuser = 'prathiba'
+select user#,serial#,osuser,username,program,schemaname from v$session where osuser = 'Saranya'
+select user#,serial#,osuser,username,program,schemaname from v$session where osuser = 'server'
+select user#,serial#,osuser,username,program,schemaname from v$session where osuser = 'Shahnawaz'
+select user#,serial#,osuser,username,program,schemaname from v$session where osuser = 'siva'
+select user#,serial#,osuser,username,program,schemaname from v$session where osuser = 'sunitha'
+select user#,serial#,osuser,username,program,schemaname from v$session where osuser = 'yetendrakumar'
+
+
+-----------------------------------------------------------------------------------------------------
+
+SELECT name, value FROM v$parameter WHERE name in ('processes','sessions','transactions');
+
+SELECT COUNT(*) FROM v$session
+SELECT COUNT(*) FROM v$process
+SELECT COUNT(*) FROM v$transaction
+SELECT COUNT(*) FROM v$resource_limit
+
+SELECT * FROM v$resource_limit
+
+SELECT RESOURCE_NAME, CURRENT_UTILIZATION, MAX_UTILIZATION FROM V$RESOURCE_LIMIT WHERE RESOURCE_NAME IN ('processes','sessions','transaction');
+
+<<<<<<1>>>>>>
+select username,status,osuser,machine,count(1) from v$session
+group by username,status,osuser,machine;
+
+<<<<<<2>>>>>>
+select username,status,osuser,machine,schemaname,program,count(1) cnt from v$session
+group by username,status,osuser,machine,schemaname,program
+order by cnt desc, osuser;
+
+<<<<<<3>>>>>>
+SELECT nvl(ses.username,'ORACLE PROC')||' ('||ses.sid||')'
+USERNAME,SID,MACHINE,REPLACE(SQL.SQL_TEXT,CHR(10),'')
+STMT,
+ltrim(to_char(floor(SES.LAST_CALL_ET/3600), '09')) || ':' ||
+ltrim(to_char(floor(mod(SES.LAST_CALL_ET, 3600)/60), '09')) || ':' ||
+ltrim(to_char(mod(SES.LAST_CALL_ET, 60), '09'))
+RUNT FROM V$SESSION SES,V$SQLtext_with_newlines SQL
+where
+--SES.STATUS = 'ACTIVE'
+    SES.USERNAME is not null
+   and SES.SQL_ADDRESS    = SQL.ADDRESS 
+   and SES.SQL_HASH_VALUE = SQL.HASH_VALUE 
+   and Ses.AUDSID <> userenv('SESSIONID') 
+order by runt desc, 1,sql.piece;
+
+
+
+---------------------------------------------------------------------------------------------------------------------------------
+Killing Specific Users only
+---------------------------------------------------------------------------------------------------------------------------------
+
+begin
+  for sessions in (select sid, serial# from v$session where MACHINE = 'PTUSER') 
+  loop
+    execute immediate 'alter system kill session'''||sessions.sid||','||sessions.serial#||''''||'immediate';
+  end loop;
+end;
+
+
+ --------------------------------------------------------------
+|		Killing the connection using SQLPlus prompt			   |
+ --------------------------------------------------------------
+SELECT s.sid,s.serial#,s.username,s.osuser FROM gv$session s;
+
+ALTER SYSTEM KILL SESSION '<<sid>>, <<serial>>#>'
+
+
+ --------------------------------------------------
+|	Finding Active and Inactive Session on ORACLE  |
+ --------------------------------------------------
+select sid, serial#, username, to_char(sysdate-last_call_et/24/60/60,'hh24:mi:ss') started, trunc(last_call_et/60) || ' mins, ' || mod(last_call_et,60) || ' secs' dur, (select distinct sql_text from v$sql where address = sql_address ) sql_text from v$session where username is not null --and last_call_et > 5*60 and status = 'ACTIVE';
+             
+select sid, serial#, username, to_char(sysdate-last_call_et/24/60/60,'hh24:mi:ss') started, trunc(last_call_et/60) || ' mins, ' || mod(last_call_et,60) || ' secs' dur, (select sql_text from v$sql where address = sql_address ) sql_text from v$session where username is not null --and last_call_et > 5*60 and status = 'INACTIVE';
+ 
+
+-----------------------------------------------------------------------------------------------------------------------------------
+Copying table from One Schema to Another Schema on the Same Database without Data:
+-----------------------------------------------------------------------------------------------------------------------------------
+
+First Schema: CC_TARGET_VER_3
+------------------------------
+grant select on CC_TARGET_VER_3.AIRLINE2 to CC_TARGET_V3_MULTI1
+
+
+Second Schema: CC_TARGET_V3_MULTI1
+-----------------------------------
+create table AIRLINE2 as select * from CC_TARGET_VER_3.AIRLINE2 where 1 = 0;
+
+
+
+alter system set processes = 500 scope = spfile;
+alter system set sessions = 555 scope = spfile;
+alter system set transactions = 610 scope = spfile; 
+
+select name, value from v$parameter where name in ('processes', 'sessions', 'transactions'); 
+
+
+create table table_name as select * from old_tablename where 1=2;
+
+
+alter table cust_table rename column cust_sex TO cust_gender;

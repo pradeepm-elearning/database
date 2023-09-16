@@ -1,0 +1,169 @@
+#subscription-manager register
+	register with the Company Mail ID.
+
+
+#vim /etc/hosts
+IP	HOSTNAME	FQDN
+
+#vim /etc/sysctl.conf ----> to configure the Kernel Parameter ---> in RHEL 6 - 7
+#vim /usr/lib/sysctl.d/00-system.conf
+
+<<EOL>>
+fs.suid_dumpable = 1
+fs.aio-max-nr = 1048576
+fs.file-max = 6815744
+kernel.shmall = 2097152
+kernel.shmmax = 536870912
+kernel.shmmni = 4096
+kernel.sem = 250 32000 100 128
+net.ipv4.ip_local_port_range = 9000 65500
+net.core.rmem_default = 262144
+net.core.rmem_max = 4194304
+net.core.wmem_default = 262144
+net.core.wmem_max = 1048586
+
+save & quit
+
+
+#/sbin/sysctl -a ----> to check the setting
+#/sbin/sysctl -p ----> to make this setting live in the Kernel.
+
+#vim /etc/security/limits.conf
+oracle	soft	nproc	2047
+oracle	hard	nproc	16384
+oracle 	soft	nofile	4096
+oracle	hard	nofile	65536
+oracle	soft 	stack	10240
+save & quit
+
+#vim /etc/selinux/config
+	SELINUX=disabled
+save & quit
+
+#yum install binutils-*x86_64
+#yum install compat-libstdc++-33*
+#yum install elfutils*
+#yum install elfutils-libelf*
+#yum install gcc-4.*
+#yum install gcc-c++-4.*
+#yum install glibc-2*x86_64*
+#yum install glibc-common
+#yum install glibc-devel
+#yum install glibc-headers
+#yum install gcc*
+#yum install ksh*
+#yum install libaio*
+#yum install libaio-devel-0.*
+#yum install libgomp-4.*
+#yum install libgcc*
+#yum install libstdc++
+#yum install libstdc++-devel-4.*
+#yum install make*
+#yum install sysstat
+#yum install numactl*
+#yum install compat-libcap*
+
+
+yum install binutils -y
+yum install compat-libstdc++-33 -y -----------------------
+yum install compat-libstdc++-33.i686 -y
+yum install gcc -y
+yum install gcc-c++ -y
+yum install glibc -y
+yum install glibc.i686 -y
+yum install glibc-devel -y
+yum install glibc-devel.i686 -y
+yum install ksh -y
+yum install libgcc -y
+yum install libgcc.i686 -y
+yum install libstdc++ -y
+yum install libstdc++.i686 -y
+yum install libstdc++-devel -y
+yum install libstdc++-devel.i686 -y
+yum install libaio -y
+yum install libaio.i686 -y
+yum install libaio-devel -y
+yum install libaio-devel.i686 -y
+yum install libXext -y
+yum install libXext.i686 -y
+yum install libXtst -y
+yum install libXtst.i686 -y
+yum install libX11 -y
+yum install libX11.i686 -y
+yum install libXau -y
+yum install libXau.i686 -y
+yum install libxcb -y
+yum install libxcb.i686 -y
+yum install libXi -y
+yum install libXi.i686 -y
+yum install make -y
+yum install sysstat -y
+yum install unixODBC -y
+yum install unixODBC-devel -y
+yum install zlib-devel -y
+yum install elfutils-libelf-devel -y
+
+--------------------------------------------
+--------------------------------------------
+#yum install nss-sofokn-freebl-3*x86_64*
+
+
+#vim /etc/security/limits.d/90-nproc.conf ---> Increase the value of "nproc" parameter for user or all user's
+*          -          nproc     2048
+
+
+groupadd -g 506 asmdba
+groupadd -g 505 asmoper
+groupadd -g 501 oinstall
+groupadd -g 502 dba
+groupadd -g 503 oper
+groupadd -g 504 asmadmin
+useradd -u 501 -g oinstall -G dba,asmdba,oper oracle
+passwd oracle
+mkdir -pv /u01/app/oracle/product/11.2.0/dbhome_1
+
+chown -R oracle:oinstall /u01
+chmod 775 /u01
+xhost +server.example.com
+unzip the files
+chown -R oracle:oinstall <<Extracted Folder>>
+
+#su - oracle
+#vim .bash_profile
+
+
+TMP=/tmp; export TMP
+TMPDIR=$TMP; export=TMPDIR
+
+ORACLE_HOSTNAME=server.example.com; export ORACLE_HOSTNAME
+
+ORACLE_UNQNAME=ORCL; export ORACLE_UNQNAME
+ORACLE_BASE=/u01/app/oracle; export ORACLE_BASE
+
+ORACLE_HOME=$ORACLE_BASE/product/11.2.0/dbhome_1; export ORACLE_HOME
+ORACLE_SID=ORCL; export ORACLE_SID
+
+PATH=/usr/sbin:$PATH; export PATH
+PATH=$ORACLE_HOME/bin:$PATH; export PATH
+LD_LIBRARY_PATH=$ORACLE_HOME/lib:/lib:/usr/lib; export LD_LIBRARY_PATH
+CLASSPATH=$ORACLE_HOME/jlib:ORACLE_HOME/rdbms/jlib; export CLASSPATH
+save & quit
+#init 6
+#cd /data/oracle/db11gr2/database
+#./runInstaller
+
+during the installation in "Prerequisite checks", click on "Fix & Check Again" if any packages are not installed. It will show the path where we have to execute the script.
+click on "Check Again"
+
+check all the packages are installed or not buy yum install <<Package_Name>>.
+Install all the Packages except pdksh & unixODBC.
+
+unlock the users by clicking on Password Management
+scott - tiger
+sh - sh
+hr - hr
+
+once the installation is complete run the script as root user
+
+/u01/app/orainventory/orainstRoot.sh
+/u01/app/oracle/product/11.2.0/dbhome_2/root.sh

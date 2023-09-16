@@ -1,0 +1,16 @@
+#!/bin/sh
+ORACLE_HOME=/u01/app/oracle/product/11.2.0/dbhome_1; export ORACLE_HOME
+export PATH=$ORACLE_HOME/bin:$PATH
+ORACLE_SID=TESTORA; export ORACLE_SID
+expdp ccsv_app/ccsv_app SCHEMAS=ccsv_app DIRECTORY=DUMP_DIR DUMPFILE=ccsv_app-$(date +%Y%m%d%H) LOGFILE=ccsv_app-$(date +%Y%m%d%H).log
+
+
+#!/bin/sh
+ORACLE_HOME=/u01/app/oracle/product/11.2.0/dbhome_1; export ORACLE_HOME
+export PATH=$ORACLE_HOME/bin:$PATH
+ORACLE_SID=TESTORA; export ORACLE_SID
+expdp SVC_DEMO/SVC_DEMO SCHEMAS=SVC_DEMO DIRECTORY=DUMP_DIR DUMPFILE=SVC_DEMO-$(date +%Y%m%d%H) LOGFILE=SVC_DEMO-$(date +%Y%m%d%H).log 
+
+
+22      18      *       *       *       sh /u01/ccsv_app.sh > /dev/null 2>&1
+23      18      *       *       *       sh /u01/SVC_DEMO.sh > /dev/null 2>&1

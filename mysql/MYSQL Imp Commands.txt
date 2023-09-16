@@ -1,6 +1,90 @@
- -------
-| MYSQL |
- -------
+ -----------
+| M Y S Q L |
+ -----------
+
+U N L O C K   A C C O U N T / U S E R
+-------------------------------------
+select Host,User,account_locked from mysql.user where account_locked='Y';
+alter user USERNAME account unlock;
+
+-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-
+
+C H E C K   T A B L E   S I Z E
+-------------------------------
+STEP-1: Create temporary table which store table wise counts table_counts
+CREATE TABLE `table_counts`
+(
+  `ID` bigint(20) NOT NULL AUTO_INCREMENT,
+  `TABLE_NAMES` varchar(200) DEFAULT NULL,
+  `TABLE_ROWS` bigint(20) DEFAULT NULL,
+  PRIMARY KEY (`ID`)
+);
+
+
+
+STEP-2: Create Procedure with Below statement
+DELIMITER $$
+CREATE  PROCEDURE `get_table_wise_count`()
+BEGIN  
+DECLARE start INTEGER DEFAULT 0;  
+DECLARE t_name varchar(255);  
+DEClARE table_names CURSOR FOR  
+    SELECT table_name FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='ccev2_syssbprod' and
+        TABLE_TYPE='BASE TABLE' 
+        ;    
+DECLARE CONTINUE HANDLER  
+        FOR NOT FOUND SET start=1;  
+        Truncate table table_counts;
+OPEN table_names;  
+get_tablename: LOOP  
+FETCH table_names INTO t_name;  
+IF start = 1 THEN  
+LEAVE get_tablename;  
+END IF;  
+SET @query =CONCAT('insert into ccev2_syssbprod.table_counts(TABLE_NAMES,TABLE_ROWS)  select "',t_name,'" as tablename ', ',', 'count(*) from ccev2_syssbprod.', t_name);  
+ 
+PREPARE insert_stmt FROM @query;  
+EXECUTE insert_stmt;  
+
+END  LOOP get_tablename;  
+CLOSE table_names;  
+END $$
+
+
+STEP-3: Execute the Procedure with below query
+Call get_table_wise_count();
+
+
+Step 4: Once above procedure call is completed execute below query to get the Output
+Select * from table_counts;
+
+-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-
+
+C H E C K   T A B L E   L O C K S
+---------------------------------
+SELECT OBJECT_TYPE,OBJECT_SCHEMA,OBJECT_NAME,LOCK_TYPE,LOCK_STATUS,THREAD_ID,PROCESSLIST_ID,PROCESSLIST_INFO
+FROM performance_schema.metadata_locks
+INNER JOIN performance_schema.threads ON THREAD_ID = OWNER_THREAD_ID
+WHERE PROCESSLIST_ID <> CONNECTION_ID() and OBJECT_SCHEMA='ccev2_syslmiuat';
+
+-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-
+
+C H E C K   P R I M A R Y   K E Y S   A R E   P R E S E N T   O R   N O T   F O R   A   D A T A B A S E
+-------------------------------------------------------------------------------------------------------
+
+SELECT t.table_schema, t.table_name
+FROM information_schema.tables t
+  LEFT JOIN (SELECT table_schema, table_name 
+             FROM information_schema.statistics
+             WHERE index_name = 'PRIMARY' 
+             GROUP BY table_schema, table_name, index_name
+             ) pks 
+  ON t.table_schema = pks.table_schema AND t.table_name = pks.table_name 
+WHERE pks.table_name IS NULL
+  AND t.table_type = 'BASE TABLE' 
+  AND t.table_schema NOT IN ('mysql', 'sys', 'performance_schema', 'information_schema');
+
+-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-
 
 delete from TAR_GATEWAY_DEFINITIONS where gat_id=5;
 
@@ -41,6 +125,14 @@ GRANT ALL PRIVILEGES ON *.* TO 'root@192.168.1.43'@'192.168.1.43' WITH GRANT OPT
 
 COMMIT;
 
+
++------------------------------------------------+
+| 			GRANT IN CLOUD ENVIRONMENT		 	 |
++------------------------------------------------+
+CREATE USER 'ccev2_syssbprod'@'192.168.0.35' IDENTIFIED BY 'Cc_StaRPr0D$43';
+GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, RELOAD, PROCESS, REFERENCES, INDEX, ALTER, SHOW DATABASES, CREATE TEMPORARY TABLES, LOCK TABLES, EXECUTE, REPLICATION SLAVE, REPLICATION CLIENT, CREATE VIEW, SHOW VIEW, CREATE ROUTINE, ALTER ROUTINE, CREATE USER, EVENT, TRIGGER ON *.* TO 'ccev2_syssbprod'@'192.168.0.35' WITH GRANT OPTION;
+FLUSH PRIVILEGES;
+commit;
 
 --------------------------------------------------
 +	Updating Password after Granting Permission  +
@@ -127,6 +219,7 @@ SELECT SUBSTRING_INDEX(host, ':', 1) AS host_short, user AS users, COUNT(*) AS c
 SELECT SUBSTRING_INDEX(host, ':', 1) AS host_short, user AS users, COUNT(*) AS count1 FROM information_schema.processlist where user ='sb_api' GROUP BY host_short,user ORDER BY COUNT(*), host_short;
 SELECT SUBSTRING_INDEX(host, ':', 1) AS host_short, user AS users, COUNT(*) AS count1 FROM information_schema.processlist GROUP BY host_short,user ORDER BY COUNT(*), host_short;
 
+
 Select concat('KILL ',ID,';') from information_schema.processlist where user ='ccev2_syssbprod' and COMMAND='Sleep' and HOST like '%10.11.95.4%';
 
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -166,3 +259,9 @@ GRANT SELECT ON cce_v2_demo.bas_properties_detail TO 'ccusr2'@'localhost';
 
 CREATE USER 'ccusr2'@'192.168.1.107' IDENTIFIED BY 'Cc#1238l2';
 GRANT SELECT ON cce_v2_demo.bas_properties_detail TO 'ccusr2'@'192.168.1.107';
+
+SHOW GRANTS FOR 'cc_api_usr'@'localhost';
+SHOW GRANTS FOR 'cc_api_usr'@'127.0.0.1';
+SHOW GRANTS FOR 'cc_api_usr'@'192.168.11.68';
+SHOW GRANTS FOR 'cc_api_usr'@'40.80.85.28';
+SHOW GRANTS FOR 'cc_api_usr'@'ccenguat';

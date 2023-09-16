@@ -1,0 +1,108 @@
+-------------------
+Creating Tablespace
+-------------------
+create tablespace <<Tablespace Name>> '/<<PATH>>/<<Any Name of Tablespace>>.dbf' size 30G autoextend on extent management local;
+create tablespace USERS datafile 'E:/app/ptuser/oradata/PTORA/USERS01.dbf' size 30G autoextend on extent management local;
+
+
+--------------------
+Extending Tablespace
+--------------------
+alter tablespace <<Tablespace Name>> add datafile '/<<PATH>>/<<Any Name of Tablespace>>.dbf' size 30G autoextend on;
+alter tablespace USERS add datafile 'D:/app/ackuser/oradata/ACKORA/USERS02.dbf' size 30G autoextend on;
+
+alter tablespace <<Tablespace Name>> add datafile '/<<PATH>>/<<Any Name of Tablespace>>.dbf' size 30G autoextend on;
+alter tablespace USERS add datafile 'D:/app/ackuser/oradata/ACKORA/USERS03.dbf' size 30G autoextend on;
+
+
+-------------------------
+Making Default Tablespace
+-------------------------
+alter database default tablespace <<Tablespace Name>>;
+alter database default tablespace USERS;
+
+
+-------------------
+Deleting Tablespace
+-------------------
+drop tablespace <<Tablespace Name>> including contents and datafiles cascade constraints;
+drop tablespace USERS including contents and datafiles cascade constraints;
+
+
+
+alter tablespace <<TABLESPACE_NAME>> drop datafile '<<PATH_TO_DATA_FILES>>';
+alter tablespace USERS drop datafile 'F:\Payback_TableSpace\USERS02.DBF';
+
+
+
+
+------------------------
+Creating Temp Tablespace
+------------------------
+create temporary tablespace <<Temporary Tablespace Name>> tempfile '/<<PATH>>/<<Any Name of Temporary Tablespace>>.dbf' size 5m autoextend on;
+create temporary tablespace TEMP tempfile 'TEMP01.dbf' size 5m autoextend on;
+
+
+------------------------------
+Extending Temporary Tablespace
+------------------------------
+alter tablespace <<Temporary Tablespace Name>> add tempfile '/<<PATH>>/<<Any Name of Temporary Tablespace>>.dbf' size 30G autoextend on;
+alter tablespace TEMP add tempfile '/u01/app/oracle/oradata/UNICADB/TEMP02.dbf' size 30G autoextend on;
+
+alter tablespace <<Temporary Tablespace Name>> add tempfile '/<<PATH>>/<<Any Name of Temporary Tablespace>>.dbf' size 30G autoextend on;
+alter tablespace TEMP add tempfile '/u01/app/oracle/oradata/UNICADB/TEMP03.dbf' size 30G autoextend on;
+
+
+-----------------------------------
+Making Default Temporary Tablespace
+-----------------------------------
+alter database default temporary tablespace <<Temporary Tablespace Name>>;
+alter database default temporary tablespace TEMP;
+
+
+-----------------------------
+Deleting Temporary Tablespace
+-----------------------------
+drop tablespace <<Temporary Tablespace Name>> including contents and datafiles cascade constraints;
+drop tablespace TEMP including contents and datafiles cascade constraints;
+
+
+▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
+▓ Important Commands ▓ 
+▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
+select * from DBA_TABLESPACES
+select * from DBA_DATA_FILES
+select * from DBA_TEMP_FILES
+select property_value from database_properties where property_name = 'default_permanent_tablespace';
+select property_value from database_properties where property_name = 'default_temp_tablespace';
+
+
+▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
+▓ To Check Tablespace Free Space ▓
+▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
+
+select
+   fs.tablespace_name                          "Tablespace",
+   (df.totalspace - fs.freespace)              "Used MB",
+   fs.freespace                                "Free MB",
+   df.totalspace                               "Total MB",
+   round(100 * (fs.freespace / df.totalspace)) "Pct. Free"
+from
+   (select
+      tablespace_name,
+      round(sum(bytes) / 1048576) TotalSpace
+   from
+      dba_data_files
+   group by
+      tablespace_name
+   ) df,
+   (select
+      tablespace_name,
+      round(sum(bytes) / 1048576) FreeSpace
+   from
+      dba_free_space
+   group by
+      tablespace_name
+   ) fs
+where
+   df.tablespace_name = fs.tablespace_name;

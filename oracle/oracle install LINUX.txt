@@ -1,0 +1,175 @@
+
+
+
+
+
+#mount /dev/cdrom1 /mnt
+
+rpm -ivh  
+
+
+
+vi /etc/hosts
+
+
+
+ /etc/init.d/network restart
+
+
+STEP 2: Prerequisites
+
+There are many prerequisites to installing Oracle 11gR2 and the following are the steps I took.
+
+Update /etc/sysctl.conf
+
+vi /etc/sysctl.conf
+
+Scroll to the bottom and add the following:
+# ###########################
+
+# ORACLE PARMS
+
+# ###########################
+
+kernel.shmall = 2097152
+
+kernel.shmmax = 2147483648
+
+kernel.shmmni = 4096
+
+kernel.sem = 250 32000 100 128
+
+net.core.rmem_default = 4194304
+
+net.core.rmem_max = 4194304
+
+net.core.wmem_default = 262144
+
+net.ipv4.ip_local_port_range = 9000 65500
+
+fs.file-max = 6815744
+
+net.core.wmem_max = 1048576
+
+fs.aio-max-nr = 1048576
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Update /etc/security/limits.conf
+
+vi /etc/security/limits.conf
+
+Scroll to the bottom and above the “# End of file” line, add:
+oracle soft nproc 2047
+
+oracle hard nproc 16384
+
+oracle soft nofile 1024
+
+oracle hard nofile 65536
+
+
+
+
+
+
+
+Add users and groups
+
+The following needed to be added:
+groupadd -g 501 oinstall
+
+groupadd -g 502 dba
+
+groupadd -g 503 oper
+
+useradd -u 502 -g oinstall -G dba,oper oracle -p oracle
+
+
+
+
+Create directories and grant permissions
+
+Oracle has a particular structure they like to use and I have mine. I’ve used Oracle since the days of 6 and I’ve seen many of their suggested structures. I have one that works for my needs.
+mkdir /opt/oracle
+
+mkdir /u01
+
+chown -R oracle:oinstall /u01
+
+chmod -R 775 /u01
+
+chown -R oracle:oinstall /opt/oracle
+
+chmod -R 775 /opt/oracle
+
+Switch to the bkup directory and setup the permissions there:
+cd /bkup
+
+chown -R oracle:oinstall database
+
+chmod -R 775 database
+
+Set up the oracle user environment
+
+su oracle
+
+vi /home/oracle/.bash_profile
+
+Add the following (use hostname from the command line to get your hostname and use the correct paths for your install):
+
+
+export TMP=/tmp
+
+export TMPDIR=$TMP
+
+export ORACLE_HOSTNAME=************
+
+export ORACLE_UNQNAME=********
+
+export ORACLE_BASE=/opt/oracle
+
+export ORACLE_HOME=$ORACLE_BASE/product/11.2.0/db_1
+
+export ORACLE_SID=********
+
+export PATH=/usr/sbin:$ORACLE_HOME/bin:$PATH
+
+export LD_LIBRARY_PATH=$ORACLE_HOME/lib:/lib:/usr/lib:/usr/lib64
+
+export CLASSPATH=$ORACLE_HOME/jlib:$ORACLE_HOME/rdbms/jlib
+
+
+
+
+
+
+
+
+DISPLAY=:0.0
+3) export DISPLAY
+4) xhost +
+5) su - oracle
+6) DISPLAY=:0.0
+7) export DISPLAY
+
+
+
+Start the Oracle Universal Installer.
+
+$ ./runInstaller
+
+
+
+
