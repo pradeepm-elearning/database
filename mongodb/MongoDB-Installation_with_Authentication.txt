@@ -1,0 +1,136 @@
+ -----------------------------------------
+|  UNZIP MONGODB DOWNLOADED FROM INTERNET |
+ -----------------------------------------
+cd /opt/mongodb/
+unzip mongodb-linux-x86_64-rhel70-4.0.18.zip
+
+
+ -------------------------
+|  CREATE data/db FOLDER  |
+ -------------------------
+cd /opt/mongodb/mongodb-linux-x86_64-rhel70-4.0.18
+mkdir -pv data/db
+
+
+ ------------------------
+| START MONGODB SERVICES |
+ ------------------------
+cd /opt/mongodb/mongodb-linux-x86_64-rhel70-4.0.18/bin
+./mongod --port 27017 --dbpath /opt/mongodb/mongodb-linux-x86_64-rhel70-4.0.18/data/db
+
+
+ -------------------------
+| CONNECT TO THE INSTANCE |
+ -------------------------
+cd /opt/mongodb/mongodb-linux-x86_64-rhel70-4.0.18/bin
+./mongo --port 27017
+
+
+ -------------------------------
+| CREATE THE USER ADMINISTRATOR |
+ -------------------------------
+> use admin
+> db.createUser(
+   {
+     user: "ccmongoadmin",
+     pwd: "M0ng0_Adm1n",
+     roles: [ { role: "root", db: "admin" } ]
+   })
+   
++-----------------------+-----------------------+-----------------------+-----------------------+
+| 	  IP ADDRESS		|		DATABASE		|		USERNAME		|		PASSWORD		|
++-----------------------+-----------------------+-----------------------+-----------------------+
+|	192.168.0.38		|	admin				|	ccmongoadmin		|	M0ng0_Adm1n			|
+|						|	ccenewuimongodevdb	|	ccenewuimongodevusr	|	CcM0nGoN3wDeV		|
++-----------------------+-----------------------+-----------------------+-----------------------+
+
+ ------------------------
+| CREATE log & pid FILES |
+ ------------------------
+cd mongodb-linux-x86_64-rhel70-4.0.18
+mkdir -pv logs/ etc/
+touch logs/mongod.log
+touch etc/mongod.pid
+
+
+ ----------------------
+| CREATE A CONFIG FILE |
+ ----------------------
+cd etc/
+vim mongod.conf
+########################################################################################################
+# mongod.conf
+
+# for documentation of all options, see:
+#   http://docs.mongodb.org/manual/reference/configuration-options/
+
+# where to write logging data.
+systemLog:
+  destination: file
+  logAppend: true
+  path: /opt/mongodb/mongodb-linux-x86_64-rhel70-4.0.18/logs/mongod.log
+
+# Where and how to store data.
+storage:
+  dbPath: /opt/mongodb/mongodb-linux-x86_64-rhel70-4.0.18/data/db/
+  journal:
+    enabled: true
+#  engine:
+#  mmapv1:
+#  wiredTiger:
+
+# how the process runs
+processManagement:
+  fork: true  # fork and run in background
+  pidFilePath: /opt/mongodb/mongodb-linux-x86_64-rhel70-4.0.18/etc/mongod.pid  # location of pidfile
+
+# network interfaces
+net:
+  port: 27017
+  bindIp: 0.0.0.0
+#127.0.0.1  # Listen to local interface only, comment to listen on all interfaces.
+
+
+#security:
+security:
+  authorization: enabled
+# security:
+#  authorization: "enabled"
+#operationProfiling:
+
+#replication:
+
+#sharding:
+
+## Enterprise-Only Options
+
+#auditLog:
+
+#snmp:
+########################################################################################################
+
+
+ ------------------------------
+| RESTART THE MONGODB SERVICES |
+ ------------------------------
+cd /opt/mongodb/mongodb-linux-x86_64-rhel70-4.0.18/bin
+./mongod --config /opt/mongodb/mongodb-linux-x86_64-rhel70-4.0.18/etc/mongod.config
+
+
+ ---------------------------------------------------------------------------------------------------------------
+| CONNECT TO DATABASE INSTANCE WITH superAdmin ACCESS AND CREATE USER ACCESS (readWrite) FROM SPECIFIC DATABASE |
+ ---------------------------------------------------------------------------------------------------------------
+./mongo --port 27017 -u "superAdmin" -p "C0EadminCc" --authenticationDatabase "admin"
+> use ccev2versiondb
+> db.createUser(
+  {
+   user: "ccev2version",
+   pwd: "Cc3ngag3V3r",
+   roles: [ "readWrite"]
+  })
+
+
+ ------------------------------------------------------------- 
+| TRY CONNECTING TO THE SPECIFIC DATABASE WITH LIMITED ACCESS |
+ -------------------------------------------------------------
+./mongo --port 27017 -u "ccev2version" -p "Cc3ngag3V3r" --authenticationDatabase "ccev2versiondb"

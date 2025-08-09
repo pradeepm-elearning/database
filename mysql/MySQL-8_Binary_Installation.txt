@@ -5,6 +5,7 @@ INSTALLATION OF MYSQL - 8 : BINARY INSTALLATION
 yum search libaio
 yum install libaio
 yum install ncurses-compat-libs
+yum install libxcrypt-compat
 
 groupadd mysql
 useradd -r -g mysql -s /bin/false mysql
@@ -157,3 +158,32 @@ FLUSH PRIVILEGES;
 COMMIT;
 
 ALTER USER 'username'@'ip_address' IDENTIFIED BY 'password';
+
+
+
+
+ -x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-
+|			SYSTEMCTL :: START - STOP SCRIPTS					|
+ -x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-
+cd /etc/systemd/system
+vim mysqld.service
+
+[Unit]
+Description=MySQL Server 8.0.33 Community Edition
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+User=mysql
+Group=mysql
+WorkingDirectory=/app/ccengage/opt/mysql-server/mysql/
+ExecStart=/app/ccengage/opt/mysql-server/mysql/support-files/mysql.server start
+ExecReload=
+ExecStop=/app/ccengage/opt/mysql-server/mysql/support-files/mysql.server stop
+RestartSec=5
+Type=forking
+PIDFile=/app/ccengage/opt/mysql-server/mysql/mysqld.pid
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
